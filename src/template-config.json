@@ -1,0 +1,60 @@
+[
+  {
+    "event": "identity.user.invited",
+    "template": "identity.user.invited.html",
+    "subject": "Has sido invitado a {{organizationName}}",
+    "to": "{{email}}",
+    "schema": {
+      "type": "object",
+      "required": ["email", "organizationName", "inviteUrl"],
+      "properties": {
+        "email": { "type": "string" },
+        "organizationName": { "type": "string", "minLength": 1 },
+        "inviteUrl": { "type": "string" }
+      }
+    }
+  },
+  {
+    "event": "identity.user.enabled",
+    "template": "identity.user.enabled.html",
+    "subject": "Tu cuenta ha sido reactivada",
+    "to": "{{email}}",
+    "schema": {
+      "type": "object",
+      "required": ["email", "organizationName"],
+      "properties": {
+        "email": { "type": "string" },
+        "organizationName": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  {
+    "event": "identity.user.disabled",
+    "template": "identity.user.disabled.html",
+    "subject": "Tu cuenta ha sido desactivada",
+    "to": "{{email}}",
+    "schema": {
+      "type": "object",
+      "required": ["email", "organizationName"],
+      "properties": {
+        "email": { "type": "string" },
+        "organizationName": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  {
+    "event": "identity.user.password_reset_requested",
+    "template": "identity.user.password_reset_requested.html",
+    "subject": "Restablece tu contraseña en {{organizationName}}",
+    "to": "{{email}}",
+    "schema": {
+      "type": "object",
+      "required": ["email", "organizationName", "resetUrl"],
+      "properties": {
+        "email": { "type": "string" },
+        "organizationName": { "type": "string", "minLength": 1 },
+        "resetUrl": { "type": "string" }
+      }
+    }
+  }
+]
