@@ -9,9 +9,11 @@
     "dev": "tsx watch src/main.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
+    "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@facturero/outbox-relay": "^0.1.0",
     "amqplib": "^2.0.1",
     "dotenv": "^16.4.7",
     "handlebars": "^4.7.8",
@@ -26,7 +28,8 @@
     "@types/nodemailer": "^6.4.17",
     "sequelize-cli": "^6.6.2",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^5.0.0"
   },
   "engines": {
     "node": ">=20"

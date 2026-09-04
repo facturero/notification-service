@@ -18,6 +18,8 @@ export class ProcessedEventModel extends Model {
   declare eventType: string;
   declare routingKey: string;
   declare payload: string;
+  declare status: string;
+  declare lastError: string | null;
   declare processedAt: Date;
 }
 
@@ -27,6 +29,16 @@ ProcessedEventModel.init(
     eventType: { type: DataTypes.STRING(100), allowNull: false, field: 'event_type' },
     routingKey: { type: DataTypes.STRING(200), allowNull: false, field: 'routing_key' },
     payload: { type: DataTypes.TEXT, allowNull: true },
+    status: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      defaultValue: 'processed',
+    },
+    lastError: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: 'last_error',
+    },
     processedAt: {
       type: DataTypes.DATE,
       allowNull: false,

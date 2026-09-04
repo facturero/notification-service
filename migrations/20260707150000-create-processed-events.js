@@ -20,6 +20,15 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
+      status: {
+        type: Sequelize.STRING(30),
+        allowNull: false,
+        defaultValue: 'processed',
+      },
+      last_error: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
       processed_at: {
         type: Sequelize.DATE,
         allowNull: false,
