@@ -18,6 +18,7 @@ RUN printf '@facturero:registry=https://npm.pkg.github.com\n//npm.pkg.github.com
 COPY --from=builder /app/dist/ dist/
 COPY --from=builder /app/src/templates/ dist/templates/
 COPY --from=builder /app/src/template-config.json dist/template-config.json
+COPY --from=builder /app/src/provider-config.json dist/provider-config.json
 COPY migrations/ migrations/
 COPY .sequelizerc .sequelizerc
 COPY sequelize.config.cjs sequelize.config.cjs

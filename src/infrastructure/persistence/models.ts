@@ -53,3 +53,95 @@ ProcessedEventModel.init(
     indexes: [{ unique: true, fields: ['id'] }],
   },
 );
+
+/** Preferencias de notificación por usuario (estilo Moodle): un provider
+ * (declarado por un plugin en provider-config.json) × canal (app/smtp) tiene
+ * un valor enabled. PK compuesta (user_id, provider_code, channel). */
+export class NotificationPreferenceModel extends Model {
+  declare userId: string;
+  declare providerCode: string;
+  declare channel: string;
+  declare enabled: boolean;
+  declare updatedAt: Date;
+}
+
+NotificationPreferenceModel.init(
+  {
+    userId: {
+      type: DataTypes.CHAR(36),
+      allowNull: false,
+      primaryKey: true,
+      field: 'user_id',
+    },
+    providerCode: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      primaryKey: true,
+      field: 'provider_code',
+    },
+    channel: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      primaryKey: true,
+    },
+    enabled: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'updated_at',
+    },
+  },
+  {
+    sequelize,
+    tableName: 'notification_preferences',
+    timestamps: false,
+  },
+);
+
+/** Notificación in-app persistida (canal `app`). `read` se mapea a la columna
+ * `is_read` porque `READ` es palabra reservada en MySQL. */
+export class NotificationModel extends Model {
+  declare id: string;
+  declare userId: string;
+  declare organizationId: string | null;
+  declare providerCode: string;
+  declare payload: Record<string, unknown> | null;
+  declare read: boolean;
+  declare createdAt: Date;
+}
+
+NotificationModel.init(
+  {
+    id: { type: DataTypes.CHAR(36), primaryKey: true },
+    userId: { type: DataTypes.CHAR(36), allowNull: false, field: 'user_id' },
+    organizationId: {
+      type: DataTypes.CHAR(36),
+      allowNull: true,
+      field: 'organization_id',
+    },
+    providerCode: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      field: 'provider_code',
+    },
+    payload: { type: DataTypes.JSON, allowNull: true },
+    read: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'is_read',
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'created_at',
+    },
+  },
+  {
+    sequelize,
+    tableName: 'notifications',
+    timestamps: false,
+  },
+);

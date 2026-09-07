@@ -3,6 +3,8 @@ import path from 'node:path';
 import fs from 'node:fs';
 
 const envSchema = z.object({
+  PORT: z.coerce.number().default(3011),
+  CORS_ORIGIN: z.string().default('*'),
   DB_HOST: z.string().default('mysql'),
   DB_PORT: z.coerce.number().default(3306),
   DB_USER: z.string().default('root'),
@@ -38,6 +40,11 @@ export interface TemplateEntry {
   subject: string;
   to: string;
   schema: Record<string, unknown>;
+  /** true = el destinatario es opcional: si `to` resuelve vacío, el evento se
+   *  descarta con log en vez de fallar el envío y reencolar (eventos que no
+   *  garantizan email, p.ej. billing). Por defecto: el destinatario es
+   *  obligatorio (requeue si falla, como con identity.*). */
+  allowNullRecipient?: boolean;
 }
 
 let _templateConfig: TemplateEntry[] | null = null;
@@ -52,4 +59,37 @@ export function loadTemplateConfig(): TemplateEntry[] {
 
 export function findTemplateEntry(eventType: string): TemplateEntry | undefined {
   return loadTemplateConfig().find((e) => e.event === eventType);
+}
+
+/** Canales de notificación soportados. Al añadir uno, actualizar también el
+ * frontend (matriz de preferencias) y el gate correspondiente. */
+export const NOTIFICATION_CHANNELS = ['app', 'smtp'] as const;
+export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
+
+export interface NotificationProvider {
+  /** Routing key del evento que dispara esta notificación. */
+  code: string;
+  /** Plugin del catálogo de plugins que expone la notificación. */
+  pluginCode: string;
+  /** Clave i18n del nombre visible (es/en/fr del frontend). */
+  nameKey: string;
+  descriptionKey: string;
+  channels: NotificationChannel[];
+  /** Valor por canal cuando el usuario no ha configurado nada. A lo Moodle:
+   * cada provider declara sus defaults y el despachador los usa como base. */
+  defaults: Record<NotificationChannel, boolean>;
+}
+
+let _providerConfig: NotificationProvider[] | null = null;
+
+export function loadProviderConfig(): NotificationProvider[] {
+  if (_providerConfig) return _providerConfig;
+  const configPath = path.resolve(__dirname, 'provider-config.json');
+  const raw = fs.readFileSync(configPath, 'utf-8');
+  _providerConfig = JSON.parse(raw) as NotificationProvider[];
+  return _providerConfig;
+}
+
+export function findProvider(eventType: string): NotificationProvider | undefined {
+  return loadProviderConfig().find((p) => p.code === eventType);
 }

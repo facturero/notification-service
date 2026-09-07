@@ -56,5 +56,38 @@
         "resetUrl": { "type": "string" }
       }
     }
+  },
+  {
+    "event": "billing.invoice.issued",
+    "template": "billing.invoice.issued.html",
+    "subject": "Factura {{number}} emitida",
+    "to": "{{#if email}}{{email}}{{else}}{{#if issuerSnapshot.email}}{{issuerSnapshot.email}}{{/if}}{{/if}}",
+    "allowNullRecipient": true,
+    "schema": {
+      "type": "object",
+      "required": ["invoiceId", "number", "organizationId"],
+      "properties": {
+        "invoiceId": { "type": "string" },
+        "number": { "type": "string", "minLength": 1 },
+        "organizationId": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    }
+  },
+  {
+    "event": "billing.invoice.voided",
+    "template": "billing.invoice.voided.html",
+    "subject": "Factura {{number}} anulada",
+    "to": "{{#if email}}{{email}}{{else}}{{#if issuerSnapshot.email}}{{issuerSnapshot.email}}{{/if}}{{/if}}",
+    "allowNullRecipient": true,
+    "schema": {
+      "type": "object",
+      "required": ["invoiceId", "number", "organizationId"],
+      "properties": {
+        "invoiceId": { "type": "string" },
+        "number": { "type": "string", "minLength": 1 },
+        "organizationId": { "type": "string" }
+      }
+    }
   }
 ]

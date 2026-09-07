@@ -5,6 +5,18 @@ import { z } from 'zod';
 import type { TemplateEntry } from '../config';
 import { TemplateNotFoundError, TemplateValidationError } from '../domain/errors';
 
+// Helper para plantillas de facturación: centavos -> "1.234,50 USD". Solo lo
+// usan los templates de billing.*; las de identity.* no lo invocan.
+Handlebars.registerHelper('cents', (cents: unknown, currency?: unknown) => {
+  const n = typeof cents === 'number' ? cents : Number(cents ?? 0);
+  const value = Number.isFinite(n) ? n : 0;
+  const formatted = new Intl.NumberFormat('es-EC', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value / 100);
+  return `${formatted} ${typeof currency === 'string' ? currency : ''}`.trim();
+});
+
 function buildZodSchema(entry: TemplateEntry): z.ZodType<unknown> {
   const schema = entry.schema as Record<string, unknown>;
   const required = (schema.required as string[]) ?? [];

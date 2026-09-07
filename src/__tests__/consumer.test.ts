@@ -10,20 +10,25 @@ class StubMailer implements Mailer {
   }
 }
 
+function prefServiceStub(isEnabled: () => Promise<boolean> = async () => true) {
+  return { isEnabled, effectiveForUser: vi.fn(async () => []) } as any;
+}
+
 describe('buildHandlers', () => {
   it('crea un handler por cada evento de plantilla', () => {
-    const handlers = buildHandlers(new StubMailer());
+    const handlers = buildHandlers(new StubMailer(), prefServiceStub());
     const events = loadTemplateConfig().map((e) => e.event);
     expect(handlers.map((h) => h.eventType).sort()).toEqual([...events].sort());
   });
 
   it('procesa un evento y envía el correo', async () => {
     const mailer = new StubMailer();
-    const handlers = buildHandlers(mailer);
+    const handlers = buildHandlers(mailer, prefServiceStub());
     const handler = handlers.find((h) => h.eventType === 'identity.user.invited')!;
 
     await handler.handle(
       {
+        userId: 'u-1',
         email: 'user@example.com',
         organizationName: 'Acme',
         inviteUrl: 'http://localhost/invite/abc',
@@ -36,11 +41,27 @@ describe('buildHandlers', () => {
     expect(mailer.sent[0].subject).toContain('Acme');
   });
 
+  it('no envía por smtp si el usuario desactivó el canal para ese provider', async () => {
+    const mailer = new StubMailer();
+    const handlers = buildHandlers(
+      mailer,
+      prefServiceStub(async () => false),
+    );
+    const handler = handlers.find((h) => h.eventType === 'identity.user.enabled')!;
+
+    await handler.handle(
+      { userId: 'u-1', email: 'a@b.com', organizationName: 'Acme' },
+      undefined as any,
+    );
+
+    expect(mailer.sent).toHaveLength(0);
+  });
+
   it('propaga el error si el mailer falla (para que el consumer reintente)', async () => {
     const failMailer: Mailer = {
       send: vi.fn().mockRejectedValue(new Error('smtp down')),
     };
-    const handlers = buildHandlers(failMailer);
+    const handlers = buildHandlers(failMailer, prefServiceStub());
     const handler = handlers.find((h) => h.eventType === 'identity.user.enabled')!;
 
     await expect(

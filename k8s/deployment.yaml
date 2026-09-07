@@ -60,6 +60,12 @@ spec:
               value: "notification-service"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://otel-collector.observability.svc.cluster.local:4318"
+            - name: PORT
+              value: "3011"
+            - name: CORS_ORIGIN
+              value: "https://crm.noahsolution.com"
+          ports:
+            - containerPort: 3011
           resources:
             requests:
               memory: "128Mi"

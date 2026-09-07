@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Factura {{number}} emitida</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px">
+        <table width="560" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden">
+          <tr>
+            <td style="background-color:#4f46e5;padding:32px;text-align:center">
+              <h1 style="color:#ffffff;margin:0;font-size:24px">Factura emitida</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px">
+              <p style="margin:0 0 16px;font-size:16px;color:#374151">Hola,</p>
+              <p style="margin:0 0 16px;font-size:16px;color:#374151">
+                La factura <strong>{{number}}</strong> fue emitida y enviada a la autoridad.
+              </p>
+              {{#if issuerSnapshot}}
+              <p style="margin:0 0 8px;font-size:14px;color:#6b7280">Emisor: {{issuerSnapshot.legalName}}</p>
+              {{/if}}
+              {{#if customerSnapshot}}
+              <p style="margin:0 0 24px;font-size:14px;color:#6b7280">Cliente: {{customerSnapshot.businessName}}</p>
+              {{/if}}
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px">
+                <tr>
+                  <td style="padding:16px 24px;font-size:16px;color:#374151">Total</td>
+                  <td style="padding:16px 24px;text-align:right;font-size:16px;font-weight:bold;color:#374151">{{cents totalCents currencyCode}}</td>
+                </tr>
+              </table>
+              <p style="margin:24px 0 0;font-size:14px;color:#9ca3af">
+                Encuentra el documento en el panel de facturación del CRM.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb">
+              <p style="margin:0;font-size:12px;color:#9ca3af">CMR — CRM &amp; Facturación Electrónica</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

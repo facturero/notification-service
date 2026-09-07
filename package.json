@@ -14,9 +14,11 @@
   },
   "dependencies": {
     "@facturero/outbox-relay": "^0.1.0",
+    "@hono/node-server": "^1.19.17",
     "amqplib": "^2.0.1",
     "dotenv": "^16.4.7",
     "handlebars": "^4.7.8",
+    "hono": "^4.13.7",
     "mysql2": "^3.11.5",
     "nodemailer": "^6.9.16",
     "sequelize": "^6.37.5",
