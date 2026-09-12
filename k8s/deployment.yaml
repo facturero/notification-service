@@ -87,8 +87,29 @@ spec:
                 secretKeyRef:
                   name: notification-rabbitmq
                   key: url
+            # SMTP de prueba (Mailtrap sandbox). Las credenciales viven en el
+            # secret, no en el manifest: el CI actualizaría valor en texto plano
+            # si estuvieran aquí. SMTP_PORT 2525 (sin TLS embebido).
             - name: SMTP_HOST
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: notification-smtp
+                  key: host
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: notification-smtp
+                  key: port
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: notification-smtp
+                  key: user
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: notification-smtp
+                  key: password
             - name: FROM_EMAIL
               value: "no-reply@cmr.com"
             - name: FROM_NAME
