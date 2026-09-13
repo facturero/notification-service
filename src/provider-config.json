@@ -46,5 +46,13 @@
     "descriptionKey": "notificationPrefs.provider.billing_invoice_voided_desc",
     "channels": ["app", "smtp"],
     "defaults": { "app": true, "smtp": true }
+  },
+  {
+    "code": "fiscal.ec.invoice.attention_required",
+    "pluginCode": "finance.electronic_invoicing",
+    "nameKey": "notificationPrefs.provider.fiscal_attention_required",
+    "descriptionKey": "notificationPrefs.provider.fiscal_attention_required_desc",
+    "channels": ["app"],
+    "defaults": { "app": true, "smtp": false }
   }
 ]

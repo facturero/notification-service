@@ -16,6 +16,10 @@ const DISPLAY_FIELDS = [
   'organizationId',
   'organizationName',
   'code',
+  // fiscal.ec.invoice.attention_required: qué pasó (mensaje del SRI o del
+  // validador) y en qué estado quedó. Sin datos del cliente.
+  'message',
+  'status',
 ] as const;
 
 const DEFAULT_LIMIT = 20;

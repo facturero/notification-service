@@ -89,5 +89,22 @@
         "organizationId": { "type": "string" }
       }
     }
+  },
+  {
+    "event": "fiscal.ec.invoice.attention_required",
+    "template": "fiscal.ec.invoice.attention_required.html",
+    "subject": "La factura {{number}} necesita tu atención",
+    "to": "{{#if email}}{{email}}{{/if}}",
+    "allowNullRecipient": true,
+    "schema": {
+      "type": "object",
+      "required": ["invoiceId", "number", "organizationId", "message"],
+      "properties": {
+        "invoiceId": { "type": "string" },
+        "number": { "type": "string", "minLength": 1 },
+        "organizationId": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    }
   }
 ]
