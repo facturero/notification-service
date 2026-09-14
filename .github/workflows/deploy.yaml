@@ -112,6 +112,18 @@ jobs:
           kubectl create secret generic notification-rabbitmq \
             --from-literal=url="$RABBITMQ_URL" \
             --dry-run=client -o yaml | kubectl apply -f -
+          # SMTP (Mailtrap sandbox): si el deploy reconstruyera el cluster y el
+          # secret no existiera, el pod no vería SMTP_HOST y no enviaría correos
+          # sin error aparente. Solo se crea si el workflow tiene credenciales;
+          # un valor vacío implicaría sobrescribir el bueno con uno roto.
+          if [ -n "$SMTP_HOST" ]; then
+            kubectl create secret generic notification-smtp \
+              --from-literal=host="$SMTP_HOST" \
+              --from-literal=port="$SMTP_PORT" \
+              --from-literal=user="$SMTP_USER" \
+              --from-literal=password="$SMTP_PASS" \
+              --dry-run=client -o yaml | kubectl apply -f -
+          fi
 
       - name: Update image and deploy
         run: |
