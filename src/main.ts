@@ -1,3 +1,4 @@
+import './infrastructure/telemetry/otel';
 import { serve } from '@hono/node-server';
 import { loadConfig } from './config';
 import { NotificationConsumer } from './infrastructure/messaging/consumer';
