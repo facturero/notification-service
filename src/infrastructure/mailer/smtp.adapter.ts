@@ -1,10 +1,10 @@
-import nodemailer from 'nodemailer';
+import nodemailer, { type Mail } from 'nodemailer';
 import type { Mailer } from './mailer.port';
 import type { Config } from '../../config';
 import { MailerError } from '../../domain/errors';
 
 export class SmtpMailer implements Mailer {
-  private readonly transporter: nodemailer.Transporter;
+  private readonly transporter: Mail;
   private readonly from: { email: string; name: string };
 
   constructor(config: Config) {
