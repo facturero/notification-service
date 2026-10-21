@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recordatorio de pago — {{organizationName}}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px">
+        <table width="560" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;max-width:100%">
+          <tr>
+            <td style="background-color:#4f46e5;padding:32px;text-align:center">
+              <h1 style="color:#ffffff;margin:0;font-size:24px">Recordatorio de pago</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px">
+              <p style="margin:0 0 16px;font-size:16px;color:#374151">Hola {{customerName}},</p>
+              <p style="margin:0 0 24px;font-size:16px;color:#374151">
+                Te escribimos de parte de <strong>{{organizationName}}</strong>: según nuestros registros tienes
+                {{receivableCount}} documento(s) vencido(s)
+                por un total de <strong>{{cents totalOverdueCents currencyCode}}</strong>.
+              </p>
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px">
+                <tr>
+                  <td style="padding:10px 16px;font-size:12px;color:#6b7280;text-transform:uppercase">Documento</td>
+                  <td style="padding:10px 16px;font-size:12px;color:#6b7280;text-transform:uppercase">Venció</td>
+                  <td style="padding:10px 16px;font-size:12px;color:#6b7280;text-transform:uppercase;text-align:right">Saldo</td>
+                </tr>
+                {{#each items}}
+                <tr>
+                  <td style="padding:10px 16px;font-size:14px;color:#374151;border-top:1px solid #e5e7eb">{{#if documentNumber}}{{documentNumber}}{{else}}—{{/if}}</td>
+                  <td style="padding:10px 16px;font-size:14px;color:#374151;border-top:1px solid #e5e7eb">{{dueDate}} <span style="color:#6b7280">({{daysOverdue}} d)</span></td>
+                  <td style="padding:10px 16px;font-size:14px;font-weight:bold;color:#374151;border-top:1px solid #e5e7eb;text-align:right">{{cents balanceCents ../currencyCode}}</td>
+                </tr>
+                {{/each}}
+              </table>
+              {{#if extraItems}}
+              <p style="margin:12px 0 0;font-size:14px;color:#6b7280">… y {{extraItems}} documento(s) más, ya incluidos en el total.</p>
+              {{/if}}
+              <p style="margin:24px 0 0;font-size:14px;color:#6b7280">
+                Si ya realizaste el pago, ignora este mensaje y disculpa la molestia. Si tienes dudas sobre algún documento,
+                responde a {{organizationName}} directamente.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb">
+              <p style="margin:0;font-size:12px;color:#9ca3af">Mensaje enviado en nombre de {{organizationName}}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
