@@ -20,6 +20,18 @@ const DISPLAY_FIELDS = [
   // validador) y en qué estado quedó. Sin datos del cliente.
   'message',
   'status',
+  // Proyectos y tareas: qué tarea, de qué proyecto y quién lo hizo (la campana pone el nombre con el directorio de compañeros).
+  // `excerpt` es el comienzo del comentario (140 caracteres), nunca el documento entero.
+  'taskId',
+  'title',
+  'projectId',
+  'projectName',
+  'commentId',
+  'excerpt',
+  'decision',
+  'when',
+  'dueOn',
+  'actorId',
 ] as const;
 
 const DEFAULT_LIMIT = 20;

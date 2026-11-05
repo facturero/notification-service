@@ -1,6 +1,6 @@
 import type { ConsumeMessage } from 'amqplib';
 import { InboxConsumer, EventHandler } from '@facturero/outbox-relay';
-import { findTemplateEntry, loadTemplateConfig, TemplateEntry } from '../../config.js';
+import { findTemplateEntry, loadProviderConfig, loadTemplateConfig, TemplateEntry } from '../../config.js';
 import { render } from '../template-engine.js';
 import type { Mailer } from '../mailer/mailer.port.js';
 import { sequelize } from '../persistence/models.js';
@@ -24,12 +24,40 @@ function shouldSendSmtp(
   return prefService.isEnabled(userId, event, 'smtp');
 }
 
+/**
+ * Proveedores que solo tienen campana (canal `app`) y ninguna plantilla de correo: p. ej. los de Proyectos y tareas, cuyos eventos
+ * traen ids de usuario y no correos. Antes el consumidor solo escuchaba eventos con plantilla, así que un proveedor así nunca llegaba
+ * a la bandeja (la campana sonaba en vivo por el gateway y desaparecía al recargar).
+ */
+export function appOnlyProviderEvents(): string[] {
+  const withTemplate = new Set(loadTemplateConfig().map((e) => e.event));
+  return loadProviderConfig()
+    .filter((p) => p.channels.includes('app') && !withTemplate.has(p.code))
+    .map((p) => p.code);
+}
+
+/** Todo lo que escucha la cola: eventos con plantilla de correo y proveedores solo de campana. */
+export function consumedEvents(): string[] {
+  return [...loadTemplateConfig().map((e) => e.event), ...appOnlyProviderEvents()];
+}
+
 export function buildHandlers(
   mailer: Mailer,
   prefService: NotificationPreferenceService,
   notifications?: NotificationService,
 ): EventHandler[] {
-  return loadTemplateConfig().map((entry: TemplateEntry) => ({
+  const appOnly: EventHandler[] = appOnlyProviderEvents().map((event) => ({
+    eventType: event,
+    async handle(payload: unknown, msg: ConsumeMessage): Promise<void> {
+      if (!notifications) return;
+      const eventId = msg?.properties?.headers?.eventId;
+      // A diferencia de los de plantilla, aquí la campana ES todo el trabajo: si falla, se relanza para que el inbox reintente.
+      const rows = await notifications.recordForEvent(event, payload as Record<string, unknown>, typeof eventId === 'string' ? eventId : undefined);
+      if (rows.length > 0) console.log(`[notification] app: ${rows.length} notificación(es) para ${event}`);
+    },
+  }));
+
+  return [...appOnly, ...loadTemplateConfig().map((entry: TemplateEntry) => ({
     eventType: entry.event,
     async handle(payload: unknown, msg: ConsumeMessage): Promise<void> {
       const activeEntry = findTemplateEntry(entry.event);
@@ -67,16 +95,18 @@ export function buildHandlers(
       // Eventos de plataforma (billing.*) no garantizan email: si el payload no
       // llega con destinatario, se descarta con log en vez de reencolar (reintentar
       // no cambiaría nada y envenenaría la cola). Los identity.* sí exigen email.
-      if (activeEntry.allowNullRecipient && !result.to.trim()) {
+      const hasRecipient = result.to.trim() !== '';
+      if (hasRecipient || !activeEntry.allowNullRecipient) {
+        await mailer.send(result.to, result.subject, result.html);
+        console.log(`[notification] processed ${activeEntry.event} → ${result.to}`);
+      } else {
         console.log(
           `[notification] ${entry.event}: sin destinatario en el evento — skipping`,
         );
-        return;
       }
-      await mailer.send(result.to, result.subject, result.html);
-      console.log(`[notification] processed ${activeEntry.event} → ${result.to}`);
+
     },
-  }));
+  }))];
 }
 
 export class NotificationConsumer {
@@ -96,7 +126,7 @@ export class NotificationConsumer {
       rabbitmqUrl,
       exchange: EXCHANGE,
       queue: QUEUE,
-      bindings: loadTemplateConfig().map((entry: TemplateEntry) => entry.event),
+      bindings: consumedEvents(),
       handlers: buildHandlers(mailer, prefService, notifications),
     });
     await this.consumer.start();
