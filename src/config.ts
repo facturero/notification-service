@@ -17,6 +17,12 @@ const envSchema = z.object({
   SMTP_PASS: z.string().optional(),
   FROM_EMAIL: z.string().default('no-reply@cmr.com'),
   FROM_NAME: z.string().default('CMR'),
+  // Avisos de Proyectos por correo: sus eventos solo traen ids, y los correos se piden a auth-service con el secreto interno. Sin
+  // el secreto, esos avisos siguen llegando a la campana pero no se mandan por correo (lo dice el arranque).
+  AUTH_SERVICE_URL: z.string().default('http://auth-service:3001'),
+  INTERNAL_SERVICE_SECRET: z.string().optional(),
+  // A dónde llevan los enlaces de los correos («Abrir la tarea»).
+  APP_URL: z.string().default('https://crm.noahsolution.com'),
 });
 
 export type Config = z.infer<typeof envSchema>;
@@ -45,6 +51,10 @@ export interface TemplateEntry {
    *  garantizan email, p.ej. billing). Por defecto: el destinatario es
    *  obligatorio (requeue si falla, como con identity.*). */
   allowNullRecipient?: boolean;
+  /** Más correos que salen del MISMO evento, cada uno con su plantilla y destinatario (p. ej. el aviso al restaurante además
+   *  de la confirmación al cliente). Se envían solo si el destinatario resuelve a algo; son de mejor esfuerzo: si uno falla
+   *  no se reencola el evento, porque eso repetiría el correo principal que ya salió. */
+  extra?: Array<{ template: string; subject: string; to: string }>;
 }
 
 let _templateConfig: TemplateEntry[] | null = null;

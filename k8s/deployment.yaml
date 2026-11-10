@@ -122,6 +122,17 @@ spec:
               value: "3011"
             - name: CORS_ORIGIN
               value: "https://crm.noahsolution.com"
+            # Avisos de Proyectos por correo: los correos se piden a auth-service con el secreto interno (el mismo Secret que ya
+            # usan auth, organization y el gateway).
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-service-node:3001"
+            - name: INTERNAL_SERVICE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: internal-service-secret
+                  key: value
+            - name: APP_URL
+              value: "https://crm.noahsolution.com"
           ports:
             - containerPort: 3011
           resources:

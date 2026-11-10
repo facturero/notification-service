@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{heading}}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px">
+        <table width="560" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;max-width:100%">
+          <tr>
+            <td style="padding:32px 32px 8px">
+              <p style="margin:0 0 4px;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px">Proyectos</p>
+              <h1 style="margin:0;font-size:20px;line-height:28px;color:#111827">{{heading}}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 32px 32px">
+              {{#if greeting}}<p style="margin:0 0 16px;font-size:16px;color:#374151">Hola {{greeting}},</p>{{/if}}
+              {{#if quote}}
+              <p style="margin:0 0 24px;padding:12px 16px;background-color:#f9fafb;border-left:4px solid #5d87ff;border-radius:4px;font-size:15px;line-height:22px;color:#374151">{{quote}}</p>
+              {{/if}}
+              <a href="{{url}}" style="display:inline-block;background-color:#5d87ff;color:#ffffff;text-decoration:none;font-size:15px;font-weight:bold;padding:12px 24px;border-radius:6px">{{ctaLabel}}</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f9fafb;padding:16px 32px;border-top:1px solid #e5e7eb">
+              <p style="margin:0;font-size:12px;line-height:18px;color:#9ca3af">
+                Te llega porque participas en esta tarea o proyecto. Puedes elegir qué avisos recibir por correo en
+                <a href="{{prefsUrl}}" style="color:#6b7280">tus preferencias de notificaciones</a>.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

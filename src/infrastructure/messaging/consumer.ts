@@ -6,6 +6,7 @@ import type { Mailer } from '../mailer/mailer.port.js';
 import { sequelize } from '../persistence/models.js';
 import type { NotificationPreferenceService } from '../../application/preferences.js';
 import type { NotificationService } from '../../application/notifications.js';
+import type { ProjectMailService } from '../../application/project-mail.js';
 
 const EXCHANGE = 'crm.events';
 const QUEUE = 'notification-service.events';
@@ -25,8 +26,8 @@ function shouldSendSmtp(
 }
 
 /**
- * Proveedores que solo tienen campana (canal `app`) y ninguna plantilla de correo: p. ej. los de Proyectos y tareas, cuyos eventos
- * traen ids de usuario y no correos. Antes el consumidor solo escuchaba eventos con plantilla, así que un proveedor así nunca llegaba
+ * Proveedores sin plantilla de correo en `template-config.json`: p. ej. los de Proyectos y tareas, cuyos eventos traen ids de usuario
+ * y no correos (su correo, si el usuario lo quiere, lo arma `ProjectMailService` pidiendo las direcciones a auth). Antes el consumidor solo escuchaba eventos con plantilla, así que un proveedor así nunca llegaba
  * a la bandeja (la campana sonaba en vivo por el gateway y desaparecía al recargar).
  */
 export function appOnlyProviderEvents(): string[] {
@@ -45,6 +46,7 @@ export function buildHandlers(
   mailer: Mailer,
   prefService: NotificationPreferenceService,
   notifications?: NotificationService,
+  projectMail?: Pick<ProjectMailService, 'send'>,
 ): EventHandler[] {
   const appOnly: EventHandler[] = appOnlyProviderEvents().map((event) => ({
     eventType: event,
@@ -54,6 +56,16 @@ export function buildHandlers(
       // A diferencia de los de plantilla, aquí la campana ES todo el trabajo: si falla, se relanza para que el inbox reintente.
       const rows = await notifications.recordForEvent(event, payload as Record<string, unknown>, typeof eventId === 'string' ? eventId : undefined);
       if (rows.length > 0) console.log(`[notification] app: ${rows.length} notificación(es) para ${event}`);
+      // El correo va DESPUÉS de la campana y no relanza: si fallara y se reintentara el evento, la campana no se duplica (id
+      // determinista) pero los correos que ya salieron sí. Cada envío fallido ya queda registrado dentro.
+      if (projectMail && event.startsWith('projects.')) {
+        try {
+          const sent = await projectMail.send(event, payload as Record<string, unknown>);
+          if (sent > 0) console.log(`[notification] smtp: ${sent} correo(s) para ${event}`);
+        } catch (err) {
+          console.error(`[notification] ${event}: no se pudieron mandar los correos:`, err);
+        }
+      }
     },
   }));
 
@@ -105,6 +117,18 @@ export function buildHandlers(
         );
       }
 
+      // Correos adicionales del mismo evento (p. ej. el aviso al restaurante). Van DESPUÉS del principal y son de mejor
+      // esfuerzo: si uno falla se registra, pero no se relanza, porque reencolar el evento repetiría el correo principal.
+      for (const extra of activeEntry.extra ?? []) {
+        try {
+          const extraResult = render({ ...activeEntry, ...extra, extra: undefined }, rec);
+          if (!extraResult.to.trim()) continue;
+          await mailer.send(extraResult.to, extraResult.subject, extraResult.html);
+          console.log(`[notification] processed ${activeEntry.event} (${extra.template}) → ${extraResult.to}`);
+        } catch (err) {
+          console.error(`[notification] ${activeEntry.event}: no se pudo enviar el correo adicional ${extra.template}:`, err);
+        }
+      }
     },
   }))];
 }
@@ -117,6 +141,7 @@ export class NotificationConsumer {
     mailer: Mailer,
     prefService: NotificationPreferenceService,
     notifications?: NotificationService,
+    projectMail?: ProjectMailService,
   ): Promise<void> {
     await sequelize.authenticate();
     await sequelize.sync();
@@ -127,7 +152,7 @@ export class NotificationConsumer {
       exchange: EXCHANGE,
       queue: QUEUE,
       bindings: consumedEvents(),
-      handlers: buildHandlers(mailer, prefService, notifications),
+      handlers: buildHandlers(mailer, prefService, notifications, projectMail),
     });
     await this.consumer.start();
 

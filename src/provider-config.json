@@ -60,23 +60,23 @@
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_task_assigned",
     "descriptionKey": "notificationPrefs.provider.projects_task_assigned_desc",
-    "channels": ["app"],
-    "defaults": { "app": true, "smtp": false }
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": true }
   },
   {
     "code": "projects.task.mentioned",
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_task_mentioned",
     "descriptionKey": "notificationPrefs.provider.projects_task_mentioned_desc",
-    "channels": ["app"],
-    "defaults": { "app": true, "smtp": false }
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": true }
   },
   {
     "code": "projects.comment.created",
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_comment_created",
     "descriptionKey": "notificationPrefs.provider.projects_comment_created_desc",
-    "channels": ["app"],
+    "channels": ["app", "smtp"],
     "defaults": { "app": true, "smtp": false }
   },
   {
@@ -84,7 +84,7 @@
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_task_completed",
     "descriptionKey": "notificationPrefs.provider.projects_task_completed_desc",
-    "channels": ["app"],
+    "channels": ["app", "smtp"],
     "defaults": { "app": true, "smtp": false }
   },
   {
@@ -92,39 +92,39 @@
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_task_due_soon",
     "descriptionKey": "notificationPrefs.provider.projects_task_due_soon_desc",
-    "channels": ["app"],
-    "defaults": { "app": true, "smtp": false }
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": true }
   },
   {
     "code": "projects.approval.requested",
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_approval_requested",
     "descriptionKey": "notificationPrefs.provider.projects_approval_requested_desc",
-    "channels": ["app"],
-    "defaults": { "app": true, "smtp": false }
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": true }
   },
   {
     "code": "projects.approval.decided",
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_approval_decided",
     "descriptionKey": "notificationPrefs.provider.projects_approval_decided_desc",
-    "channels": ["app"],
-    "defaults": { "app": true, "smtp": false }
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": true }
   },
   {
     "code": "projects.member.added",
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_member_added",
     "descriptionKey": "notificationPrefs.provider.projects_member_added_desc",
-    "channels": ["app"],
-    "defaults": { "app": true, "smtp": false }
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": true }
   },
   {
     "code": "projects.task.unblocked",
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_task_unblocked",
     "descriptionKey": "notificationPrefs.provider.projects_task_unblocked_desc",
-    "channels": ["app"],
+    "channels": ["app", "smtp"],
     "defaults": { "app": true, "smtp": false }
   },
   {
@@ -132,7 +132,7 @@
     "pluginCode": "projects.tasks_kanban",
     "nameKey": "notificationPrefs.provider.projects_status_update_posted",
     "descriptionKey": "notificationPrefs.provider.projects_status_update_posted_desc",
-    "channels": ["app"],
+    "channels": ["app", "smtp"],
     "defaults": { "app": true, "smtp": false }
   }
 ]

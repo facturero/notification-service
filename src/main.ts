@@ -8,6 +8,8 @@ import { SequelizeNotificationPreferenceRepository } from './infrastructure/pers
 import { SequelizeNotificationRepository } from './infrastructure/persistence/notifications-repository';
 import { NotificationPreferenceService } from './application/preferences';
 import { NotificationService } from './application/notifications';
+import { ProjectMailService } from './application/project-mail';
+import { AuthContactDirectory } from './infrastructure/directory/auth-contacts';
 import { createApp } from './interface/http/app';
 
 async function main(): Promise<void> {
@@ -26,6 +28,12 @@ async function main(): Promise<void> {
     prefService,
   );
 
+  // Avisos de Proyectos por correo: solo con el secreto interno, que es lo que permite pedir los correos a auth-service.
+  const projectMail = config.INTERNAL_SERVICE_SECRET
+    ? new ProjectMailService(mailer, prefService, new AuthContactDirectory(config.AUTH_SERVICE_URL, config.INTERNAL_SERVICE_SECRET), config.APP_URL)
+    : undefined;
+  if (!projectMail) console.warn('[notification-service] sin INTERNAL_SERVICE_SECRET: los avisos de Proyectos no se mandan por correo');
+
   const httpApp = createApp({
     preferenceService: prefService,
     notificationService,
@@ -37,7 +45,7 @@ async function main(): Promise<void> {
   serve({ fetch: httpApp.fetch, port: config.PORT });
 
   const consumer = new NotificationConsumer();
-  await consumer.start(config.RABBITMQ_URL, mailer, prefService, notificationService);
+  await consumer.start(config.RABBITMQ_URL, mailer, prefService, notificationService, projectMail);
 
   console.log('[notification-service] started');
 
