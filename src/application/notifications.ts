@@ -32,6 +32,13 @@ const DISPLAY_FIELDS = [
   'when',
   'dueOn',
   'actorId',
+  // Mensajería (chat-service): de qué conversación es y quién escribió. NUNCA el texto (los eventos del chat no lo traen).
+  'conversationId',
+  'conversationName',
+  'messageId',
+  'threadRootId',
+  'kind',
+  'senderId',
 ] as const;
 
 const DEFAULT_LIMIT = 20;
@@ -101,14 +108,30 @@ export class NotificationService {
     const data = safePayload(payload);
 
     const created: StoredNotification[] = [];
+    const groupKey = provider.collapseBy;
+    const groupValue = groupKey && typeof payload[groupKey] === 'string' ? (payload[groupKey] as string) : null;
+
     for (const userId of userIds) {
       if (!(await this.prefs.isEnabled(userId, providerCode, 'app'))) continue;
+      if (groupKey && groupValue) {
+        // Agrupado: si ya hay una campana sin leer de esto mismo, se suma a ella. `lastEventId` evita contar dos veces un reintento.
+        const open = await this.repo.findUnreadByKey(userId, providerCode, groupKey, groupValue);
+        if (open) {
+          const previous = open.payload ?? {};
+          if (eventId && previous.lastEventId === eventId) continue;
+          const count = (typeof previous.count === 'number' ? previous.count : 1) + 1;
+          const merged = { ...data, count, ...(eventId ? { lastEventId: eventId } : {}) };
+          await this.repo.refresh(open.id, merged, new Date());
+          created.push({ ...open, payload: merged });
+          continue;
+        }
+      }
       const row = await this.repo.create({
         id: eventId ? deterministicId(eventId, userId) : randomUUID(),
         userId,
         organizationId,
         providerCode,
-        payload: data,
+        payload: groupKey && groupValue ? { ...data, count: 1, ...(eventId ? { lastEventId: eventId } : {}) } : data,
       });
       if (row) created.push(row);
     }

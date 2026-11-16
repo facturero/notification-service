@@ -34,6 +34,8 @@ function memoryRepo(): NotificationRepository & { rows: StoredNotification[] } {
     countUnread: vi.fn(async () => rows.length),
     markRead: vi.fn(),
     markAllRead: vi.fn(),
+    findUnreadByKey: vi.fn(async () => null),
+    refresh: vi.fn(),
   };
 }
 

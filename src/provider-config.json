@@ -134,5 +134,14 @@
     "descriptionKey": "notificationPrefs.provider.projects_status_update_posted_desc",
     "channels": ["app", "smtp"],
     "defaults": { "app": true, "smtp": false }
+  },
+  {
+    "code": "chat.message.created",
+    "pluginCode": "comm.internal_chat",
+    "nameKey": "notificationPrefs.provider.chat_message_created",
+    "descriptionKey": "notificationPrefs.provider.chat_message_created_desc",
+    "channels": ["app"],
+    "defaults": { "app": true, "smtp": false },
+    "collapseBy": "conversationId"
   }
 ]

@@ -88,6 +88,11 @@ export interface NotificationProvider {
   /** Valor por canal cuando el usuario no ha configurado nada. A lo Moodle:
    * cada provider declara sus defaults y el despachador los usa como base. */
   defaults: Record<NotificationChannel, boolean>;
+  /**
+   * Agrupa en UNA campana sin leer los eventos con el mismo valor en este campo (p. ej. `conversationId` en la mensajería: «3 mensajes
+   * nuevos en #ventas» en vez de tres avisos). Al leerla, el siguiente evento abre otra.
+   */
+  collapseBy?: string;
 }
 
 let _providerConfig: NotificationProvider[] | null = null;

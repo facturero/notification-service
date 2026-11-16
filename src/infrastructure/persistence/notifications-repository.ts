@@ -28,6 +28,10 @@ export interface NotificationRepository {
   /** Devuelve false si la notificación no existe o no es de ese usuario. */
   markRead(userId: string, id: string): Promise<boolean>;
   markAllRead(userId: string): Promise<number>;
+  /** La campana SIN LEER de ese usuario y provider cuyo `payload[key]` vale `value` (agrupación, ver `collapseBy`). */
+  findUnreadByKey(userId: string, providerCode: string, key: string, value: string): Promise<StoredNotification | null>;
+  /** Reemplaza el contenido de una campana agrupada y la vuelve a subir arriba (fecha nueva). */
+  refresh(id: string, payload: Record<string, unknown>, at: Date): Promise<void>;
 }
 
 function toStored(row: NotificationModel): StoredNotification {
@@ -82,6 +86,18 @@ export class SequelizeNotificationRepository implements NotificationRepository {
     // primero es un 404 para el cliente.
     const exists = await NotificationModel.count({ where: { id, userId } });
     return exists > 0;
+  }
+
+  async findUnreadByKey(userId: string, providerCode: string, key: string, value: string): Promise<StoredNotification | null> {
+    // Pocas filas por persona y provider sin leer (una por conversación): se filtra el campo del JSON aquí, sin depender del
+    // soporte de rutas JSON del dialecto.
+    const rows = await NotificationModel.findAll({ where: { userId, providerCode, read: false }, order: [['createdAt', 'DESC']], limit: 50 });
+    const hit = rows.find((r) => (r.payload as Record<string, unknown> | null)?.[key] === value);
+    return hit ? toStored(hit) : null;
+  }
+
+  async refresh(id: string, payload: Record<string, unknown>, at: Date): Promise<void> {
+    await NotificationModel.update({ payload, createdAt: at }, { where: { id } });
   }
 
   async markAllRead(userId: string): Promise<number> {
