@@ -39,6 +39,11 @@ const DISPLAY_FIELDS = [
   'threadRootId',
   'kind',
   'senderId',
+  // Comentarios y mejoras (feedback-service): qué envío, en qué estado quedó y cuántos puntos. Sin títulos ni textos (el evento no
+  // los trae: el navegador los pide por REST al abrir el envío).
+  'itemId',
+  'previousStatus',
+  'amount',
 ] as const;
 
 const DEFAULT_LIMIT = 20;

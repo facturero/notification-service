@@ -47,6 +47,7 @@ export function buildHandlers(
   prefService: NotificationPreferenceService,
   notifications?: NotificationService,
   projectMail?: Pick<ProjectMailService, 'send'>,
+  feedbackMail?: Pick<ProjectMailService, 'send'>,
 ): EventHandler[] {
   const appOnly: EventHandler[] = appOnlyProviderEvents().map((event) => ({
     eventType: event,
@@ -58,9 +59,10 @@ export function buildHandlers(
       if (rows.length > 0) console.log(`[notification] app: ${rows.length} notificación(es) para ${event}`);
       // El correo va DESPUÉS de la campana y no relanza: si fallara y se reintentara el evento, la campana no se duplica (id
       // determinista) pero los correos que ya salieron sí. Cada envío fallido ya queda registrado dentro.
-      if (projectMail && event.startsWith('projects.')) {
+      const mail = event.startsWith('projects.') ? projectMail : event.startsWith('feedback.') ? feedbackMail : undefined;
+      if (mail) {
         try {
-          const sent = await projectMail.send(event, payload as Record<string, unknown>);
+          const sent = await mail.send(event, payload as Record<string, unknown>);
           if (sent > 0) console.log(`[notification] smtp: ${sent} correo(s) para ${event}`);
         } catch (err) {
           console.error(`[notification] ${event}: no se pudieron mandar los correos:`, err);
@@ -142,6 +144,7 @@ export class NotificationConsumer {
     prefService: NotificationPreferenceService,
     notifications?: NotificationService,
     projectMail?: ProjectMailService,
+    feedbackMail?: ProjectMailService,
   ): Promise<void> {
     await sequelize.authenticate();
     await sequelize.sync();
@@ -152,7 +155,7 @@ export class NotificationConsumer {
       exchange: EXCHANGE,
       queue: QUEUE,
       bindings: consumedEvents(),
-      handlers: buildHandlers(mailer, prefService, notifications, projectMail),
+      handlers: buildHandlers(mailer, prefService, notifications, projectMail, feedbackMail),
     });
     await this.consumer.start();
 

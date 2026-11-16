@@ -96,12 +96,25 @@ function recipients(payload: Record<string, unknown>): string[] {
  * falla no se reencola el evento, porque eso repetiría los correos que sí salieron. Un fallo se registra y sigue con el siguiente.
  * Nunca escribe a quien causó el aviso (si alguien se menciona a sí mismo, no se manda nada).
  */
+export type MailContentFn = (
+  event: string,
+  payload: Record<string, unknown>,
+  actor: Contact | undefined,
+  appUrl: string,
+) => ProjectMailContent | null;
+
 export class ProjectMailService {
+  /**
+   * `content` y `template` son los de Proyectos por defecto. Comentarios y mejoras usa esta misma clase con los suyos (ver
+   * `feedback-mail.ts`): mismo trabajo —preferencia smtp, correos pedidos a auth, mejor esfuerzo—, otro texto y otro pie.
+   */
   constructor(
     private readonly mailer: Mailer,
     private readonly prefs: Pick<NotificationPreferenceService, 'isEnabled'>,
     private readonly directory: ContactDirectory,
     private readonly appUrl: string,
+    private readonly content: MailContentFn = projectMailContent,
+    private readonly template = 'projects.notification.html',
   ) {}
 
   async send(event: string, payload: Record<string, unknown>): Promise<number> {
@@ -116,7 +129,7 @@ export class ProjectMailService {
     if (wanted.length === 0 || !organizationId) return 0;
 
     const contacts = await this.directory.contactsOf(organizationId);
-    const content = projectMailContent(event, payload, contacts.get(actorId), this.appUrl);
+    const content = this.content(event, payload, contacts.get(actorId), this.appUrl);
     if (!content) return 0;
 
     let sent = 0;
@@ -126,7 +139,7 @@ export class ProjectMailService {
       if (!contact) continue;
       try {
         const { html } = render(
-          { event, template: 'projects.notification.html', subject: '', to: '', schema: { properties: {} } },
+          { event, template: this.template, subject: '', to: '', schema: { properties: {} } },
           { ...content, greeting: contact.fullName?.trim() || '', prefsUrl: `${this.appUrl}/settings?tab=notifications` },
         );
         await this.mailer.send(contact.email, content.subject, html);

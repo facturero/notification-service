@@ -143,5 +143,29 @@
     "channels": ["app"],
     "defaults": { "app": true, "smtp": false },
     "collapseBy": "conversationId"
+  },
+  {
+    "code": "feedback.reply.created",
+    "pluginCode": "core.feedback",
+    "nameKey": "notificationPrefs.provider.feedback_reply_created",
+    "descriptionKey": "notificationPrefs.provider.feedback_reply_created_desc",
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": true }
+  },
+  {
+    "code": "feedback.item.status_changed",
+    "pluginCode": "core.feedback",
+    "nameKey": "notificationPrefs.provider.feedback_status_changed",
+    "descriptionKey": "notificationPrefs.provider.feedback_status_changed_desc",
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": false }
+  },
+  {
+    "code": "feedback.points.granted",
+    "pluginCode": "core.feedback",
+    "nameKey": "notificationPrefs.provider.feedback_points_granted",
+    "descriptionKey": "notificationPrefs.provider.feedback_points_granted_desc",
+    "channels": ["app", "smtp"],
+    "defaults": { "app": true, "smtp": false }
   }
 ]

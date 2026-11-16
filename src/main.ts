@@ -9,6 +9,7 @@ import { SequelizeNotificationRepository } from './infrastructure/persistence/no
 import { NotificationPreferenceService } from './application/preferences';
 import { NotificationService } from './application/notifications';
 import { ProjectMailService } from './application/project-mail';
+import { feedbackMailContent, FEEDBACK_MAIL_TEMPLATE } from './application/feedback-mail';
 import { AuthContactDirectory } from './infrastructure/directory/auth-contacts';
 import { createApp } from './interface/http/app';
 
@@ -28,11 +29,14 @@ async function main(): Promise<void> {
     prefService,
   );
 
-  // Avisos de Proyectos por correo: solo con el secreto interno, que es lo que permite pedir los correos a auth-service.
-  const projectMail = config.INTERNAL_SERVICE_SECRET
-    ? new ProjectMailService(mailer, prefService, new AuthContactDirectory(config.AUTH_SERVICE_URL, config.INTERNAL_SERVICE_SECRET), config.APP_URL)
+  // Avisos de Proyectos y de Comentarios y mejoras por correo: solo con el secreto interno, que es lo que permite pedir los correos a
+  // auth-service. Comparten el directorio (y su caché de un minuto).
+  const directory = config.INTERNAL_SERVICE_SECRET ? new AuthContactDirectory(config.AUTH_SERVICE_URL, config.INTERNAL_SERVICE_SECRET) : undefined;
+  const projectMail = directory ? new ProjectMailService(mailer, prefService, directory, config.APP_URL) : undefined;
+  const feedbackMail = directory
+    ? new ProjectMailService(mailer, prefService, directory, config.APP_URL, feedbackMailContent, FEEDBACK_MAIL_TEMPLATE)
     : undefined;
-  if (!projectMail) console.warn('[notification-service] sin INTERNAL_SERVICE_SECRET: los avisos de Proyectos no se mandan por correo');
+  if (!directory) console.warn('[notification-service] sin INTERNAL_SERVICE_SECRET: los avisos de Proyectos y de Comentarios y mejoras no se mandan por correo');
 
   const httpApp = createApp({
     preferenceService: prefService,
@@ -45,7 +49,7 @@ async function main(): Promise<void> {
   serve({ fetch: httpApp.fetch, port: config.PORT });
 
   const consumer = new NotificationConsumer();
-  await consumer.start(config.RABBITMQ_URL, mailer, prefService, notificationService, projectMail);
+  await consumer.start(config.RABBITMQ_URL, mailer, prefService, notificationService, projectMail, feedbackMail);
 
   console.log('[notification-service] started');
 
