@@ -17,6 +17,9 @@ Handlebars.registerHelper('cents', (cents: unknown, currency?: unknown) => {
   return `${formatted} ${typeof currency === 'string' ? currency : ''}`.trim();
 });
 
+// Comparación simple para plantillas: `{{#if (eq cancelledBy "staff")}}`. Handlebars no trae ninguna.
+Handlebars.registerHelper('eq', (a: unknown, b: unknown) => a === b);
+
 function buildZodSchema(entry: TemplateEntry): z.ZodType<unknown> {
   const schema = entry.schema as Record<string, unknown>;
   const required = (schema.required as string[]) ?? [];

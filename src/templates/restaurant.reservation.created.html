@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reserva confirmada en {{restaurantName}}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px">
+        <table width="560" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;max-width:100%">
+          <tr>
+            <td style="background-color:#4f46e5;padding:32px;text-align:center">
+              <h1 style="color:#ffffff;margin:0;font-size:24px">Reserva confirmada</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px">
+              <p style="margin:0 0 16px;font-size:16px;color:#374151">Hola {{guestName}},</p>
+              <p style="margin:0 0 24px;font-size:16px;color:#374151">
+                Tu mesa en <strong>{{restaurantName}}</strong> está reservada.
+              </p>
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px">
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Fecha</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;font-weight:bold;color:#374151">{{dateText}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Hora</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;font-weight:bold;color:#374151">{{timeText}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Personas</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;font-weight:bold;color:#374151">{{partySize}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Código</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;font-weight:bold;color:#374151;letter-spacing:2px">{{code}}</td>
+                </tr>
+              </table>
+              {{#if notes}}
+              <p style="margin:16px 0 0;font-size:14px;color:#6b7280">Tus notas: {{notes}}</p>
+              {{/if}}
+              {{#if manageUrl}}
+              <p style="margin:32px 0 8px;text-align:center">
+                <a href="{{manageUrl}}" style="display:inline-block;background-color:#4f46e5;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:6px;font-size:16px">Ver o cancelar mi reserva</a>
+              </p>
+              <p style="margin:0;font-size:12px;color:#9ca3af;text-align:center">
+                Si no puedes asistir, cancela desde ese enlace para liberar la mesa.
+              </p>
+              {{/if}}
+              {{#if restaurantPhone}}
+              <p style="margin:24px 0 0;font-size:14px;color:#6b7280">¿Dudas o cambios? Llama al {{restaurantPhone}}.</p>
+              {{/if}}
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb">
+              <p style="margin:0;font-size:12px;color:#9ca3af">Reservas — {{restaurantName}}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

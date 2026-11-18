@@ -108,6 +108,60 @@
     }
   },
   {
+    "event": "restaurant.reservation.created",
+    "template": "restaurant.reservation.created.html",
+    "subject": "Reserva confirmada en {{restaurantName}} — {{dateText}}, {{timeText}}",
+    "to": "{{guestEmail}}",
+    "allowNullRecipient": true,
+    "schema": {
+      "type": "object",
+      "required": ["code", "guestName", "restaurantName", "dateText", "timeText"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1 },
+        "guestName": { "type": "string", "minLength": 1 },
+        "guestEmail": { "type": "string" },
+        "restaurantName": { "type": "string", "minLength": 1 },
+        "dateText": { "type": "string" },
+        "timeText": { "type": "string" },
+        "manageUrl": { "type": "string" }
+      }
+    },
+    "extra": [
+      {
+        "template": "restaurant.reservation.created.staff.html",
+        "subject": "Nueva reserva: {{guestName}} ({{partySize}} personas) — {{dateText}}, {{timeText}}",
+        "to": "{{staffNoticeEmail}}"
+      }
+    ]
+  },
+  {
+    "event": "restaurant.reservation.cancelled",
+    "template": "restaurant.reservation.cancelled.html",
+    "subject": "Reserva cancelada en {{restaurantName}}",
+    "to": "{{guestEmail}}",
+    "allowNullRecipient": true,
+    "schema": {
+      "type": "object",
+      "required": ["code", "guestName", "restaurantName", "dateText", "timeText"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1 },
+        "guestName": { "type": "string", "minLength": 1 },
+        "guestEmail": { "type": "string" },
+        "restaurantName": { "type": "string", "minLength": 1 },
+        "dateText": { "type": "string" },
+        "timeText": { "type": "string" },
+        "cancelledBy": { "type": "string" }
+      }
+    },
+    "extra": [
+      {
+        "template": "restaurant.reservation.cancelled.staff.html",
+        "subject": "Reserva cancelada: {{guestName}} — {{dateText}}, {{timeText}}",
+        "to": "{{staffNoticeEmail}}"
+      }
+    ]
+  },
+  {
     "event": "treasury.receivable.overdue",
     "template": "treasury.receivable.overdue.html",
     "subject": "Recordatorio de pago — {{organizationName}}",

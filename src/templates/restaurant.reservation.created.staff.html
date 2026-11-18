@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nueva reserva: {{guestName}}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:Arial,sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td align="center" style="padding:32px 16px">
+        <table width="560" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;max-width:100%">
+          <tr>
+            <td style="background-color:#4f46e5;padding:32px;text-align:center">
+              <h1 style="color:#ffffff;margin:0;font-size:24px">Nueva reserva</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px">
+              <p style="margin:0 0 24px;font-size:16px;color:#374151">
+                Un cliente reservó en <strong>{{restaurantName}}</strong> desde la página de reservas.
+              </p>
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9fafb;border:1px solid #e5e7eb;border-radius:8px">
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Cliente</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;font-weight:bold;color:#374151">{{guestName}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Teléfono</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;color:#374151">{{guestPhone}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Correo</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;color:#374151">{{guestEmail}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Cuándo</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;font-weight:bold;color:#374151">{{dateText}}, {{timeText}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Personas</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;font-weight:bold;color:#374151">{{partySize}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Mesas</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;color:#374151">{{tableNames}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 24px;font-size:14px;color:#6b7280">Código</td>
+                  <td style="padding:12px 24px;text-align:right;font-size:16px;color:#374151;letter-spacing:2px">{{code}}</td>
+                </tr>
+              </table>
+              {{#if notes}}
+              <p style="margin:16px 0 0;font-size:14px;color:#374151"><strong>Notas del cliente:</strong> {{notes}}</p>
+              {{/if}}
+              <p style="margin:24px 0 0;font-size:14px;color:#9ca3af">
+                Puedes verla y gestionarla en el CRM, en Restaurante › Reservas.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb">
+              <p style="margin:0;font-size:12px;color:#9ca3af">CMR — CRM &amp; Facturación Electrónica</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
