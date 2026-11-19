@@ -1,14 +1,15 @@
-import nodemailer from 'nodemailer';
+// Importación por nombre: los tipos de nodemailer 10 (@types/nodemailer 8) ya no exponen un espacio de nombres `nodemailer.*`.
+import { createTransport, type Transporter } from 'nodemailer';
 import type { Mailer } from './mailer.port';
 import type { Config } from '../../config';
 import { MailerError } from '../../domain/errors';
 
 export class SmtpMailer implements Mailer {
-  private readonly transporter: nodemailer.Transporter;
+  private readonly transporter: Transporter;
   private readonly from: { email: string; name: string };
 
   constructor(config: Config) {
-    this.transporter = nodemailer.createTransport({
+    this.transporter = createTransport({
       host: config.SMTP_HOST,
       port: config.SMTP_PORT,
       secure: config.SMTP_PORT === 465,
